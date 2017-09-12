@@ -1,0 +1,23 @@
+package com.epro.leave.controller.common;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.epro.leave.common.DropdownResponse;
+
+@Controller
+@RequestMapping("/dropdown")
+public class DropdownController {
+
+	@PostMapping("/employee")
+	public DropdownResponse getEmployee() {
+		try {
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+}

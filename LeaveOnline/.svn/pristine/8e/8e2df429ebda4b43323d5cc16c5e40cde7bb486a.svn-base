@@ -1,0 +1,37 @@
+import { Http } from '@angular/http';
+import { Injectable } from '@angular/core';
+import { Observable } from "rxjs/Rx";
+
+import { LazyLoadEvent } from "primeng/components/common/lazyloadevent";
+import { Message } from "primeng/primeng";
+import { CommonFunction } from "app/commons/CommonFunction";
+import { AuthoritiesModel } from "app/masters/authorities/Authorities";
+import { CommonOptions } from "app/commons/CommonOptions";
+
+let http: Http;
+let common = new CommonFunction(http);
+let rootPath = "/api/authorities/";
+@Injectable()
+export class AuthoritiesService {
+
+  constructor() { }
+
+  loadAuthoritiesTable(){
+    return common.post(new CommonOptions(rootPath+"load",{}));
+  }
+
+  removeAuthoritiesTable(authoritiesTable: AuthoritiesModel[]){
+    return common.post(new CommonOptions(rootPath+"delete", authoritiesTable));
+  }
+
+  saveOrUpdate(formValue: AuthoritiesModel, isModify: boolean): Promise<Message>{
+    var path = isModify?"update":"save";
+    return common.post(new CommonOptions(rootPath+path, formValue));
+  }
+
+  loadLazyAuthoritiesTableLazy(lazy: LazyLoadEvent){
+    return common.post(new CommonOptions(rootPath+"loadLazy", lazy));
+  }
+
+}
+

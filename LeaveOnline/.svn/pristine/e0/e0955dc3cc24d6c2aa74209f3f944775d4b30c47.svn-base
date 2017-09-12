@@ -1,0 +1,218 @@
+package com.epro.leave.controller.administrator;
+
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.hibernate.criterion.DetachedCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.epro.infrastructure.json.TreeJSONReader;
+import com.epro.infrastructure.security.entity.Authority;
+import com.epro.infrastructure.security.entity.Menu;
+import com.epro.infrastructure.util.BeanUtils;
+import com.epro.leave.common.CommonResponse;
+import com.epro.leave.common.LazyLoadEventRequest;
+import com.epro.leave.common.LazyLoadEventResponse;
+import com.epro.leave.common.LazyLoadEventUtill;
+import com.epro.leave.common.LoadTree;
+import com.epro.leave.common.MessageResponse;
+import com.epro.leave.common.TreeMenu;
+import com.epro.leave.controller.master.ApiController;
+import com.epro.leave.service.MenuService;
+
+@RestController
+@RequestMapping("/api/Menu")
+public class MenuController {
+	
+	@Autowired
+	MenuService menuService;
+	
+	@PostMapping("/save")
+	public ResponseEntity<MessageResponse> save(@RequestBody Menu menu) {
+		try {
+			System.out.println(menu.getParent().getId());
+			/*Authority authority = menuService.get(Authority.class,1);
+			
+			Set<Authority> setAut = new HashSet<Authority>();
+			setAut.add(authority);
+			menu.setAuthorities(setAut);*/
+			
+			//Menu menu_parent = menuService.get(Menu.class, menu.getParent());		
+			
+			//menu.setParent(menu_parent);
+			
+			menuService.save(menu);
+			return CommonResponse.getSuccessMessageResponse();
+		} catch (Exception e) {
+			// TODO: handle exception
+			return CommonResponse.getErrorMessageResponse(e);
+		}
+	}
+	
+	
+	
+	
+	@RequestMapping(value="/Test")
+	public void  saveMenu() {
+		/*
+		Authority authority = menuService.get(Authority.class,1);
+		
+		Set<Authority> setAut = new HashSet<Authority>();
+		setAut.add(authority);
+		menu.setAuthorities(setAut);*/
+		
+		Menu menu = new Menu();
+		menu.setName("TestMenu");
+		menu.setActiveFlag(true);
+		menu.setOrder(1);
+		
+		
+		
+		menuService.save(menu);
+				
+	}
+	
+	@PostMapping("/loadAll")
+	@RequestMapping(value="/loadAll")
+	public List<Menu> load() {
+		List<Menu> menu = menuService.findAll(Menu.class);
+		return menu;
+	}
+	
+	@PostMapping("/update")
+	public ResponseEntity<MessageResponse> update(@RequestBody Menu menu) {
+		try {
+			
+			/*Authority authority = menuService.get(Authority.class,1);
+			
+			Set<Authority> setAut = new HashSet<Authority>();
+			setAut.add(authority);
+			menu.setAuthorities(setAut);*/
+			
+			//menu.setParent(menu);
+			
+			//menu.setParent(menu.getParent());
+			
+			menuService.update(menu);
+			return CommonResponse.getSuccessMessageResponse();
+		} catch (Exception e) {
+			// TODO: handle exception
+			return CommonResponse.getErrorMessageResponse(e);
+		}
+	}
+	
+	@PostMapping("/delete")
+	public ResponseEntity<MessageResponse> deleteAll(@RequestBody List<Menu> menu) {
+		try {
+			Authority authority = menuService.get(Authority.class,1);
+			
+			Set<Authority> setAut = new HashSet<Authority>();
+			setAut.add(authority);
+			//menu.setAuthorities(setAut);
+			
+			menuService.mergeAndRemove(menu);
+			return CommonResponse.getSuccessMessageResponse();
+		} catch (Exception e) {
+			// TODO: handle exception
+			return CommonResponse.getErrorMessageResponse(e);
+		}
+	}
+	
+	@PostMapping("/loadLazy")
+	public  LazyLoadEventResponse<Menu> loadMenuLazy(@RequestBody  LazyLoadEventRequest   lazyLoadEventRequest) {
+		
+		
+		
+		try {
+			System.out.println("+++++++++++++++++++++++"+lazyLoadEventRequest);
+			DetachedCriteria criteria = DetachedCriteria.forClass(Menu.class);
+			
+			
+			return LazyLoadEventUtill.generateLazyLoadEventResponseByCriteria(lazyLoadEventRequest, criteria, menuService);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+	
+		
+		@PostMapping("/loadTree")
+		@RequestMapping(value="/loadTree")
+		 public LoadTree  loadmenu() {
+			 List<Menu>menuAll = menuService.findAll(Menu.class);
+			 //List<Menu>menuAuthority = menuService.
+//			 
+			 LoadTree loadTree =new LoadTree();
+			 loadTree.setData( createTreeNode(menuAll));
+			 return loadTree;
+		 }
+/*		
+	public static TreeMenu loadChildren(List<Menu> menuAll,TreeMenu grand,Integer menuGrandId){
+		 try {
+			 
+			List<Menu> motherNotNullGrand = menuAll.stream().filter( m -> BeanUtils.isNotNull(m.getParent())).collect(Collectors.toList());
+			List<Menu> mothers = motherNotNullGrand.stream().filter(m -> m.getParent().getId() == menuGrandId ).collect(Collectors.toList());
+			
+			if(BeanUtils.isNotEmpty(mothers)) {
+				for(Menu menuMother : mothers) {
+					System.err.println("\tMother : "+menuMother.getName());
+					TreeMenu mother = new TreeMenu();
+					//mother.setTitle(menuMother.getName());
+					mother.setLabel(menuMother.getName());
+					mother.setData(menuMother);
+					grand.getChildren().add(mother);
+					
+					MenuController.loadChildren(menuAll, mother, menuMother.getId());
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RuntimeException(e);
+		}
+		 
+		 return grand;
+	 }
+	*/
+
+	private List<TreeMenu> createTreeNode(List<Menu> menus) {
+		List<TreeMenu> listTree = new ArrayList<TreeMenu>();
+		createTreeNode(listTree, menus, menus, true);
+		return listTree;
+	}
+
+	private void createTreeNode(List<TreeMenu> listTree, List<Menu> menusAll, List<Menu> menus, boolean isRoot) {
+		List<Menu> menuList = isRoot
+				? menus.stream().filter(menu -> BeanUtils.isNull(menu.getParent())).collect(Collectors.toList())
+				: menus;
+		for (Menu menu : menuList) {
+			TreeMenu treeNode = new TreeMenu();
+			treeNode.setData(menu);
+			treeNode.setLabel(menu.getName());
+			
+			List<Menu> childrens = menusAll.stream().filter(children -> BeanUtils.isNotNull(children.getParent())
+					&& children.getParent().getId().equals(menu.getId())).collect(Collectors.toList());
+			
+			if (BeanUtils.isNotEmpty(childrens)) {
+				List<TreeMenu> childenTreeNodeList = new ArrayList<>();
+				createTreeNode(childenTreeNodeList, menusAll, childrens, false);
+				treeNode.getChildren().addAll(childenTreeNodeList);
+			}
+			
+			listTree.add(treeNode);
+		}
+	}
+	
+	
+
+}

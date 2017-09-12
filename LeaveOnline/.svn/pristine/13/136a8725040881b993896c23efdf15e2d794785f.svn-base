@@ -1,0 +1,201 @@
+<form [formGroup]="leavetypeform" (ngSubmit)="onSubmit(leavetypeform.value)">
+
+    <p-panel header="Parameter table header Management" [toggleable]="true" [style]="{'margin-bottom':'20px'}">
+
+        <button pButton type="submit" class="ui-button-primary" icon="fa-check" label="{{btnLabel}}" [disabled]="!leavetypeform.valid">
+</button>
+        <button pButton type="button" icon="fa fa-refresh" class="ui-button-warning" label="Clear" (click)="onResetForm()">
+</button>
+        <button pButton *ngIf="isModify" type="button" class="ui-button-danger" icon="fa-close" label="Cancle" (click)="cancleUpdate()"></button>
+
+
+        <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    ชื่อประเภทการลา *:
+                </div>
+                <div class="ui-grid-col-7">
+                    <input pInputText type="hidden" formControlName="leaveTypeId" />
+                    <input pInputText type="text" formControlName="leaveTypeName" placeholder="Required" />
+                </div>
+                <div class="ui-grid-col-3">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!leavetypeform.controls['leaveTypeName'].valid&&leavetypeform.controls['leaveTypeName'].dirty">
+                        <i class="fa fa-close"></i> Table Code is required
+                    </div>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    ผู้อยู่ในช่วงทดลองงาน *:
+                </div>
+                <div class="ui-grid-col-7">
+                    <p-inputSwitch formControlName="probationFlag" onLabel="ลาได้" offLabel="ลาไม่ได้"></p-inputSwitch>
+                </div>
+                <div class="ui-grid-col-3">
+                    <!-- <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!leavetypeform.controls['probationFlag'].valid&&leavetypeform.controls['probationFlag'].dirty">
+                        <i class="fa fa-close"></i> Code is required
+                    </div> -->
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    นับอายุงาน* :
+                </div>
+                <div class="ui-grid-col-7">
+
+                    <div class="ui-grid-col-6">
+                        <p-inputSwitch formControlName="countWorkingFlag" onLabel="นับอายุงาน" offLabel="ไม่นับอายุงาน" (onChange)="toggleDisabled()"></p-inputSwitch>
+                    </div>
+                    <div class="ui-grid-col-2">
+                        จำนวนวันลา:
+                    </div>
+                    <div class="ui-grid-col-1">
+                        <input pInputText type="number" formControlName="leaveDay" placeholder=""/>
+                    </div>
+                    <div class="ui-grid-col-3">
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            วัน</span>
+                    </div>
+                </div>
+
+                <div class="ui-grid-col-3">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!leavetypeform.controls['leaveDay'].valid&&leavetypeform.controls['leaveDay'].dirty">
+                        <i class="fa fa-close"></i> Leave Day is required
+                    </div>
+                </div>
+            </div>
+            <!-- <template #clone> -->
+            <div formArrayName="workingPeriodTypes">
+                <div *ngFor="let workingPeriodType of workingPeriodTypes.controls; let i=index">
+
+                    <div [formGroupName]="i">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3">
+
+                            </div>
+                            <div class="ui-grid-col-10">
+                                <div class="ui-grid-col-2">
+                                    อายุงานไม่เกิน:
+                                </div>
+                                <div class="ui-grid-col-1">
+                                    <input pInputText type="hidden" formControlName="workingPeriodTypeId" />
+                                    <input pInputText type="number" formControlName="workingPeriodYear" placeholder="" />
+                                </div>
+                                <div class="ui-grid-col-2">
+                                    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;จำนวนวันลา:
+                                </div>
+                                <div class="ui-grid-col-1">
+                                    <input pInputText type="number" formControlName="leaveDay" placeholder="" />
+                                </div>
+                                <div class="ui-grid-col-1">
+                                    &nbsp;
+                                </div>
+                                <div class="ui-grid-col-1" *ngIf="i==workingPeriodTypes.length-1">
+                                    <button pButton type="button" class="ui-button-success" label="เพิ่ม" (click)="addWorkingPeriodType()"></button>
+                                </div>
+                                <div class="ui-grid-col-1" *ngIf="workingPeriodTypes.length!=1">
+                                    <button pButton type="button" class="ui-button-danger" label="ลบ" (click)="removeWorkingPeriodType(i)"></button>
+                                </div>
+                                <div class="ui-grid-col-3">
+                                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!leavetypeform.get('workingPeriodTypes').controls[i].valid&&leavetypeform.get('workingPeriodTypes').controls[i].dirty">
+                                        <i class="fa fa-close"></i> Required
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--        </template>
+            <div #container></div> -->
+
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    เว้นวันหยุด:
+                </div>
+                <div class="ui-grid-col-7">
+                    <p-inputSwitch formControlName="holidayFlag" onLabel="เว้นวันหยุด" offLabel="ไม่เว้นวันหยุด"></p-inputSwitch>
+                </div>
+                <div class="ui-grid-col-3"></div>
+            </div>
+
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    เงื่อนไขการลา:
+                </div>
+                <div class="ui-grid-col-7">
+                    <textarea pInputTextarea type="text" formControlName="leaveCondition"></textarea>
+                </div>
+                <div class="ui-grid-col-3">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!leavetypeform.controls['leaveCondition'].valid&&leavetypeform.controls['leaveCondition'].dirty">
+                        <i class="fa fa-close"></i> Leave Condition is required
+                    </div>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    วันที่เริ่มใช้งาน:
+                </div>
+                <div class="ui-grid-col-7">
+                    <p-calendar formControlName="effectiveDate" [showIcon]="true"></p-calendar>
+                </div>
+                <div class="ui-grid-col-3">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!leavetypeform.controls['effectiveDate'].valid&&leavetypeform.controls['effectiveDate'].dirty">
+                        <i class="fa fa-close"></i> Effective Date is required
+                    </div>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    สถานะ:
+                </div>
+                <div class="ui-grid-col-7">
+                    <p-inputSwitch formControlName="activeFlag" onLabel="ใช้งาน" offLabel="ไม่ใช้งาน"></p-inputSwitch>
+                </div>
+                <div class="ui-grid-col-3"></div>
+            </div>
+        </div>
+        <br>
+    </p-panel>
+
+</form>
+
+
+
+<p-dataTable [value]="leaveObj" [rows]="5" [(selection)]="selectedLeavetype" dataKey="leaveTypeId" [paginator]="true" [pageLinks]="3"
+    [stacked]="stacked" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadLazyLeaveType($event)">
+
+    <p-header>ข้อมูลการลา</p-header>
+    <p-column styleClass="col-button" [style]="{'width': '50px'}">
+        <ng-template pTemplate="header">
+            <button type="button" pButton icon="fa-trash" class="ui-button-danger" (click)="onRemove()"></button></ng-template>
+        <ng-template let-leaveTypee="rowData" pTemplate="body">
+            <button type="button" pButton icon="fa-edit" class="ui-button-success" (click)="selectLeaveType(leaveTypee)"></button>
+        </ng-template>
+    </p-column>
+    <p-column [style]="{'width':'38px'}" selectionMode="multiple"></p-column>
+    <p-column field="leaveTypeId" header="ID" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="leaveTypeName" header="ประเภทการลา" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="probationFlag" header="ช่วงทดลองงาน" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="countWorkingFlag" header="นับอายุงาน" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="holidayFlag" header="นับวันลา" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="workingPeriodTypes.leaveDay" header="จำนวนวันลา" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="effectiveDate" header="วันที่เริ่มใช้งาน" [sortable]="true" [filter]="true">
+        <ng-template let-col let-leave="rowData" let-ri="rowIndex" pTemplate="body">
+            <span *ngIf="leave[col.field]">{{leave[col.field] | date: 'dd/MM/yyyy'}}</span>
+        </ng-template>
+    </p-column>
+
+    <p-column field="activeFlag" header="สถานะ" [sortable]="true" [filter]="true">
+        <ng-template let-col let-pthCol="rowData" pTemplate="body">
+            <!--  {{pthCol[col.field]}} | -->
+            <div *ngIf="pthCol[col.field] == true;then content else other_content">ไม่พบข้อมูล</div>
+            <ng-template #content>ใช้งาน</ng-template>
+            <ng-template #other_content>ไม่ใช้งาน</ng-template>
+        </ng-template>
+    </p-column>
+</p-dataTable>
+
+<p-confirmDialog></p-confirmDialog>
+<p-growl [(value)]="msgs" styleClass="registerGrowl" life="3000"></p-growl>

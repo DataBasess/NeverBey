@@ -1,0 +1,193 @@
+<p-growl [(value)]="msgs" styleClass="registerGrowl" life="3000"></p-growl>
+
+
+<p-panel header="Menu Management" [toggleable]="true"  [style]="{'margin-bottom':'20px'}">
+
+
+     
+        <form [formGroup]="menuform" (ngSubmit)="onSubmit(menuform.value)">
+        <button pButton type="submit" class="ui-button-primary" icon="fa-check" label="{{btnLabel}}" [disabled]="!menuform.valid">
+        </button>
+        <button pButton type="button" icon="fa fa-refresh" class="ui-button-warning" label="Clear" (click)="onResetForm()">
+        </button>
+         <button pButton *ngIf="isModify" type="button" class="ui-button-danger" icon="fa-close" label="Cancle" (click)="cancleUpdate()"></button>
+
+
+        <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style=""> 
+
+                <div class="ui-grid-row">
+                        <div class="ui-grid-col-2">
+                            เมนูหลัก *:
+                        </div>
+                        <div class="ui-grid-col-5">
+                            <!-- <input pInputText type="hidden" formControlName="id" /> -->
+                            <!-- <input pInputText type="hidden" formControlName="parent"  placeholder="Required" readonly />  -->
+                            <div class="ui-inputgroup">
+                                    <input pInputText type="text"  value="{{menuform.controls['parent'].value?.name}}" placeholder="Required" readonly /> 
+                             <button pButton type="button" (click)="showDialog()" icon="fa-search" class="ui-button-secondary ui-inputgroup-addon" ></button>
+                            </div>
+                        </div>
+                        <div class="ui-grid-col-7">
+                            <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!menuform.invalid&&!menuform.controls['parent'].valid&&menuform.controls['parent'].dirty">
+                                <i class="fa fa-close"></i> Menu parent is required
+                            </div>
+                        </div>
+                 </div> 
+
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    ชื่อเมนู :
+                </div>
+                <div class="ui-grid-col-5">
+                    <input pInputText type="text" formControlName="name" placeholder="Required" />
+                </div>
+                <div class="ui-grid-col-7">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!menuform.controls['name'].valid&&menuform.controls['name'].dirty">
+                        <i class="fa fa-close"></i> Name is required
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    ลิงค์ :
+                </div>
+                <div class="ui-grid-col-5">
+                    <input pInputText type="text" formControlName="link" placeholder="Required" />
+                </div>
+                <div class="ui-grid-col-7">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!menuform.controls['link'].valid&&menuform.controls['link'].dirty">
+                        <i class="fa fa-close"></i> Link  is required 
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        ภาพเมนู :
+                    </div>
+                    <div class="ui-grid-col-5">
+                        <input pInputText type="text" formControlName="picturePath" placeholder="Required" />
+                    </div>
+                    <div class="ui-grid-col-7">
+                        <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!menuform.controls['picturePath'].valid&&menuform.controls['picturePath'].dirty">
+                            <i class="fa fa-close"></i> picturePath  is required 
+                        </div>
+                    </div>
+            </div>
+
+            <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        ไอคอนเมนู :
+                    </div>
+                    <div class="ui-grid-col-5">
+                        <input pInputText type="text" formControlName="menuIcon" placeholder="Required" />
+                    </div>
+                    <div class="ui-grid-col-7">
+                        <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!menuform.controls['menuIcon'].valid&&menuform.controls['menuIcon'].dirty">
+                            <i class="fa fa-close"></i> menuIcon  is required 
+                        </div>
+                    </div>
+            </div>
+
+            <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        ออเดอร์ ไอดี :
+                    </div>
+                    <div class="ui-grid-col-5">
+                        <input pInputText type="number" formControlName="order" placeholder="Required" />
+                    </div>
+                    <div class="ui-grid-col-7">
+                        <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!menuform.controls['order'].valid&&menuform.controls['order'].dirty">
+                            <i class="fa fa-close"></i> Order  is required number
+                        </div>
+                    </div>
+            </div>
+            
+               <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    สถานะ:
+                </div>
+                
+                <div class="ui-grid-col-5">
+                        <p-inputSwitch formControlName="activeFlag" onLabel="ใช้งาน" offLabel="ไม่ใช้งาน" ></p-inputSwitch>
+                    <!-- <p-radioButton name="groupname" value="Y" label="ใช้งาน"       formControlName="activeFlag"></p-radioButton>
+                    <p-radioButton name="groupname" value="N" label="ไม่ใช้งาน"     formControlName="activeFlag"></p-radioButton> -->
+                </div> 
+                <div class="ui-grid-col-7"></div>
+            </div>
+         </div> 
+    </form>     
+
+     
+
+    <br>
+
+</p-panel>
+
+    
+    
+    
+
+    <p-dialog header="กรุณาเลือกเมนู" [(visible)]="display" modal="modal" width="300" [responsive]="true">
+        <p-tree [value]="files" selectionMode="single" [(selection)]="selectedFiles" (onNodeSelect)="nodeSelect($event)"></p-tree>
+            <p-footer>
+                
+                <button type="button" pButton icon="fa-close" (click)="display=false" label="Close"></button>
+            </p-footer>
+    </p-dialog>
+    
+
+    
+    
+    
+ 
+
+<p-panel header="Data Table Menu " [toggleable]="true" [style]="{'margin-bottom':'20px'}"> 
+    <p-dataTable [value]="menu" [rows]="5"  
+            [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[1,5,10,20]"  
+            [globalFilter]="gb" 
+            [stacked]="stacked"
+            [(selection)]="selectedmenu" dataKey="id"  
+            [lazy]="true"  [totalRecords]="totalRecords" (onLazyLoad)="loadMenuLazy($event)"  
+            >
+             
+                
+            
+            <p-header>Parameter Menu</p-header>
+        <p-column styleClass="col-button" [style]="{'width': '50px'}">
+            <ng-template pTemplate="header">
+                <button type="button" pButton icon="fa-trash" class="ui-button-danger" (click)="onRemove()"></button></ng-template>
+            <ng-template let-menus="rowData" pTemplate="body">
+                <button type="button" pButton icon="fa-edit" class="ui-button-success" (click)="selectMenu(menus)"></button>
+            </ng-template>
+        </p-column>
+        
+        <p-column [style]="{'width':'38px'}" selectionMode="multiple" ></p-column>
+        <p-column field="id"            header="Id"         [sortable]="true" [filter]="true" filterPlaceholder="Search"></p-column>
+        <p-column field="name"          header="name"       [sortable]="true" [filter]="true" filterPlaceholder="Search"></p-column>
+        <p-column field="picturePath"   header="picturePath"      [sortable]="true" [filter]="true" filterPlaceholder="Search"></p-column>
+        <p-column field="menuIcon"      header="menuIcon"      [sortable]="true" [filter]="true" filterPlaceholder="Search"></p-column>
+        <p-column field="parent.name"        header="parent"      [sortable]="true" [filter]="true" filterPlaceholder="Search">
+            
+        </p-column>
+        <p-column field="activeFlag"    header="ActiveFlag" [sortable]="true" >
+                <ng-template let-col let-pthCol="rowData" pTemplate="body">                   
+                    <div *ngIf="pthCol[col.field];then content else other_content">ไม่พบข้อมูล</div>                   
+                    <ng-template #content>ใช้งาน</ng-template>
+                    <ng-template #other_content>ไม่ใช้งาน</ng-template>
+                </ng-template>
+        </p-column>
+
+        
+    </p-dataTable> 
+     
+<br>
+</p-panel>
+
+
+
+
+<p-confirmDialog></p-confirmDialog>
+
+ 

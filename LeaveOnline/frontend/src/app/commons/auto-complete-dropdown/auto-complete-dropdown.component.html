@@ -1,0 +1,4 @@
+<p-autoComplete [suggestions]="dropdownOptions.filteredData" [size]="30" [minLength]="1" placeholder="{{dropdownOptions.placeholder}}"
+    [dropdown]="true" field="{{dropdownOptions.fieldValue}}" (onSelect)="onSelectItem($event)" (completeMethod)="search($event)"
+    (onDropdownClick)="handleDropdownClick()">
+</p-autoComplete>

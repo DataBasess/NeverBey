@@ -1,0 +1,207 @@
+package com.epro.leave.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.SelectBeforeUpdate;
+
+import com.epro.infrastructure.hibernate4.entity.AbstractEntity;
+import com.epro.infrastructure.util.JsonDateSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+@Entity
+@Table(name = "employee")
+@DynamicUpdate
+@SelectBeforeUpdate
+public class Employee extends AbstractEntity implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@SequenceGenerator(name="pk_sequence", sequenceName="employee_id_seq", allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE,generator="pk_sequence")
+	@Column(name = "employee_id")
+	private Integer employeeId;
+
+	@Column(name = "employee_code", nullable = false, length = 10)
+	private String employeeCode;
+	
+	@Column(name = "employee_firstname", nullable = false, length = 50)
+	private String employeeFirstName;
+	
+	@Column(name = "employee_lastname", nullable = false, length = 50)
+	private String employeeLastName;
+	
+	@Column(name = "email_address")
+	private String emailAddress;
+	
+	
+	@Formula("(concat(employee_prefix,' ',employee_firstname,' ',employee_lastname ))")
+	private String employeePrefixFullName;
+	
+	@Formula("(concat(employee_firstname,' ',employee_lastname ))")
+	private String employeeFullName;
+	
+/*	@Formula("(concat(employee_firstname,' ',employee_lastname ,' (',(select center.center_name from center where center.center_id = belong_to_center_id),')'))")
+	private String employeeFullNameCenter;
+	*/
+	@Column(name = "employee_tel_no", length = 10)
+	private String employeeTelNo;
+
+	@Column(name = "employee_start_date")
+	private Date employeeStartDate;
+	
+	@Column(name = "employee_resign_date")
+	private Date employeeResignDate;
+	
+	@Column(name = "employee_prefix", nullable = false, length = 10)
+	private String employeePrefix;
+
+	@Column(name = "active_flag", nullable = false, length = 1)
+	private String activeFlag;
+	
+	@Column(name = "profile_image", columnDefinition="TEXT")
+	private String profileImage;
+	
+	/*@Formula("(array_to_string( (select array_agg(center.center_name) from center inner join employee_belong_to_second on employee_belong_to_second.center_id = center.center_id and employee_belong_to_second.employee_id = employee_id),','))")
+	private String belongToCenterSecond;*/
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	public Integer getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(Integer employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public String getEmployeeCode() {
+		return employeeCode;
+	}
+
+	public void setEmployeeCode(String employeeCode) {
+		this.employeeCode = employeeCode;
+	}
+
+	public String getEmployeeFirstName() {
+		return employeeFirstName;
+	}
+
+	public void setEmployeeFirstName(String employeeFirstName) {
+		this.employeeFirstName = employeeFirstName;
+	}
+
+	public String getEmployeeLastName() {
+		return employeeLastName;
+	}
+
+	public void setEmployeeLastName(String employeeLastName) {
+		this.employeeLastName = employeeLastName;
+	}
+
+	public String getEmployeeTelNo() {
+		return employeeTelNo;
+	}
+
+	public void setEmployeeTelNo(String employeeTelNo) {
+		this.employeeTelNo = employeeTelNo;
+	}
+	
+	@JsonSerialize(using=JsonDateSerializer.class)
+	public Date getEmployeeStartDate() {
+		return employeeStartDate;
+	}
+
+	public void setEmployeeStartDate(Date employeeStartDate) {
+		this.employeeStartDate = employeeStartDate;
+	}
+	
+	@JsonSerialize(using=JsonDateSerializer.class)
+	public Date getEmployeeResignDate() {
+		return employeeResignDate;
+	}
+
+	public void setEmployeeResignDate(Date employeeResignDate) {
+		this.employeeResignDate = employeeResignDate;
+	}
+
+	public String getEmployeePrefix() {
+		return employeePrefix;
+	}
+
+	public void setEmployeePrefix(String employeePrefix) {
+		this.employeePrefix = employeePrefix;
+	}
+
+	public String getActiveFlag() {
+		return activeFlag;
+	}
+
+	public void setActiveFlag(String activeFlag) {
+		this.activeFlag = activeFlag;
+	}
+
+	@JsonIgnore
+	public String getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
+	}
+
+
+	public String getEmployeePrefixFullName() {
+		return employeePrefixFullName;
+	}
+
+	public void setEmployeePrefixFullName(String employeePrefixFullName) {
+		this.employeePrefixFullName = employeePrefixFullName;
+	}
+
+	public String getEmployeeFullName() {
+		return employeeFullName;
+	}
+
+	public void setEmployeeFullName(String employeeFullName) {
+		this.employeeFullName = employeeFullName;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+/*	public String getBelongToCenterSecond() {
+		return belongToCenterSecond;
+	}
+
+	public void setBelongToCenterSecond(String belongToCenterSecond) {
+		this.belongToCenterSecond = belongToCenterSecond;
+	}
+
+	public String getEmployeeFullNameCenter() {
+		return employeeFullNameCenter;
+	}
+
+	public void setEmployeeFullNameCenter(String employeeFullNameCenter) {
+		this.employeeFullNameCenter = employeeFullNameCenter;
+	}*/
+	
+}

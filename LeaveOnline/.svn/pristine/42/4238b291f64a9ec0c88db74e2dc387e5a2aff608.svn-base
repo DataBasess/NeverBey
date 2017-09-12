@@ -1,0 +1,122 @@
+import { ConfirmDialogModule, ConfirmationService } from 'primeng/primeng';
+import { Component, OnInit } from '@angular/core';
+import { Message } from "primeng/primeng";
+import { Validators, FormControl, FormGroup, FormBuilder } from '@angular/forms';
+import { Employees } from "app/masters/employees/Employees";
+import { EmployeesService } from "app/masters/employees/employees.service";
+
+
+@Component({
+  selector: 'app-employees',
+  templateUrl: './employees.component.html',
+  styleUrls: ['./employees.component.scss'],
+  providers: [EmployeesService, ConfirmationService]
+
+})
+export class EmployeesComponent implements OnInit {
+  employeeform: FormGroup;
+  errorMessage: string;
+  msgs: Message[] = [];
+
+  btnLabel = "Save";
+  isModify = false;
+
+  selectedEmployees: Employees[];
+  employeesObj: Employees[];
+
+  constructor(public formBuilder: FormBuilder, public employeesService: EmployeesService, private confirmationService: ConfirmationService) { }
+
+  ngOnInit() {
+    this.employeeform = this.formBuilder.group({
+      'employeeId': new FormControl(''),
+      'employeeCode': new FormControl('', Validators.required),
+      'employeeFirstName': new FormControl('', Validators.required),
+      'employeeLastName': new FormControl('', Validators.required),
+      'emailAddress': new FormControl('', Validators.required),
+      'employeeTelNo': new FormControl('', Validators.required),
+      'employeePrefix': new FormControl('', Validators.required),
+      'activeFlag': new FormControl('')
+    });
+    this.reloadEmployee();
+  }
+
+  onSubmit(value: Employees) {
+    this.msgs = [];
+    this.employeesService.saveOrUpdateEmployee(this.employeeform.value, this.isModify)
+      .then(
+      result => {
+        console.log(result);
+        this.cancleUpdate();
+        this.msgs.push(result);
+        this.reloadEmployee();
+      },
+      errors => {
+        let error = errors.json();
+        console.log(error);
+        this.msgs.push(error)
+      }
+      );
+
+  }
+
+  onRemove() {
+
+    console.log(this.selectedEmployees);
+    this.confirmationService.confirm({
+      message: 'Are you sure that you want to proceed?',
+      header: 'Confirmation',
+      icon: 'fa fa-question-circle',
+      accept: () => {
+        this.employeesService.removeEmployee(this.selectedEmployees)
+          .then(
+          result => {
+            console.log(result);
+            this.resetForm();
+            this.selectedEmployees = [];
+            this.msgs.push(result);
+            this.reloadEmployee();
+          },
+          errors => {
+            let error = errors.json();
+            //console.log(error);
+            this.msgs.push(error)
+          }
+          );
+      },
+      reject: () => {
+        //console.log("Reject");
+      }
+    });
+
+  }
+
+  reloadEmployee() {
+    this.employeesService.loadEmployee().then(result => {
+      this.employeesObj = result;
+    });
+  }
+
+  selectEmployee(employee: Employees) {
+    console.log(employee);
+    (<FormGroup>this.employeeform).reset(employee);
+
+    this.btnLabel = "Update";
+    this.isModify = true;
+    /* {'employeeId':employee.employeeId} */
+  }
+
+  resetForm() {
+    (<FormGroup>this.employeeform).reset({});
+  }
+
+  cancleUpdate() {
+    this.resetForm();
+    this.btnLabel = "Save";
+    this.isModify = false;
+
+  }
+
+
+
+
+}

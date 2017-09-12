@@ -1,0 +1,16 @@
+/* You can add global styles to this file, and also import other style files */
+@import "bootstrap/bootstrap";
+@import "spinner";
+@import "utils";
+@import "rtl";
+@import "responsive";
+
+@import "~font-awesome/css/font-awesome.min.css"; 
+@import "~primeng/resources/primeng.min.css"; 
+@import "~primeng/resources/themes/omega/theme.css";
+
+.registerGrowl.ui-growl {
+    position: absolute !important;
+    top: 0px !important;
+    z-index:99999999999;
+    }

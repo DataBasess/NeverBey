@@ -1,0 +1,71 @@
+/*package com.epro.infrastructure.security.entity;
+
+import java.io.Serializable;
+
+import javax.persistence.Embeddable;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.epro.leave.entity.ReferenceDataList;
+
+*//**
+ * @author Worachet Suparat
+ * @author Tanakarn Intanuwat
+ *//*
+
+@Embeddable
+public class MenuAuthorityControlPK implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	@ManyToOne()
+	@JoinColumn(name="authority_id", referencedColumnName="id", foreignKey = @ForeignKey(name="menu_authorities_fk1"))
+	private Authority authorities;
+	
+	@ManyToOne()
+	@JoinColumn(name="menus_id", referencedColumnName="id", foreignKey = @ForeignKey(name="menu_authorities_fk2"))
+	private Menu menus;
+	
+	@ManyToOne()
+	@JoinColumn(name="reference_data_list_id", referencedColumnName="id", foreignKey = @ForeignKey(name="menu_authorities_fk3"))
+	private ReferenceDataList referenceDataList;
+
+	
+	public MenuAuthorityControlPK() {
+		super();
+	}
+
+	public MenuAuthorityControlPK(Authority authorities, Menu menus,
+			ReferenceDataList referenceDataList) {
+		super();
+		this.authorities = authorities;
+		this.menus = menus;
+		this.referenceDataList = referenceDataList;
+	}
+
+	public Authority getAuthorities() {
+		return authorities;
+	}
+
+	public void setAuthorities(Authority authorities) {
+		this.authorities = authorities;
+	}
+
+	public Menu getMenus() {
+		return menus;
+	}
+
+	public void setMenus(Menu menus) {
+		this.menus = menus;
+	}
+
+	public ReferenceDataList getReferenceDataList() {
+		return referenceDataList;
+	}
+
+	public void setReferenceDataList(ReferenceDataList referenceDataList) {
+		this.referenceDataList = referenceDataList;
+	}
+}
+*/

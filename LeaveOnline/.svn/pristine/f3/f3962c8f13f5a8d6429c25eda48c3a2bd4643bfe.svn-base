@@ -1,0 +1,105 @@
+<p-growl [(value)]="msgs" styleClass="registerGrowl" life="3000"></p-growl>
+
+<form [formGroup]="ptform" (ngSubmit)="onSubmit(ptform.value)">
+
+    <p-panel header="Parameter table header Management" [toggleable]="true" [style]="{'margin-bottom':'20px'}">
+
+        <button pButton type="submit" class="ui-button-primary" icon="fa-check" label="{{btnLabel}}" [disabled]="!ptform.valid">
+</button>
+        <button pButton type="button" icon="fa fa-refresh" class="ui-button-warning" label="Clear" (click)="onResetForm()">
+</button>
+        <button pButton *ngIf="isModify" type="button" class="ui-button-danger" icon="fa-close" label="Cancle" (click)="cancleUpdate()"></button>
+
+
+        <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    รหัส *:
+                </div>
+                <div class="ui-grid-col-5">
+                    <input pInputText type="hidden" formControlName="id" />
+                    <input pInputText type="text" formControlName="tableCode" placeholder="Required" />
+                </div>
+                <div class="ui-grid-col-7">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!ptform.controls['tableCode'].valid&&ptform.controls['tableCode'].dirty">
+                        <i class="fa fa-close"></i> Table Code is required
+                    </div>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    หัวข้อ *:
+                </div>
+                <div class="ui-grid-col-5">
+                    <input pInputText type="text" formControlName="code" placeholder="Required" />
+                </div>
+                <div class="ui-grid-col-7">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!ptform.controls['code'].valid&&ptform.controls['code'].dirty">
+                        <i class="fa fa-close"></i> Code is required
+                    </div>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    ชื่อย่อ* :
+                </div>
+                <div class="ui-grid-col-5">
+                    <input pInputText type="text" formControlName="shortDescription" placeholder="Required" />
+                </div>
+                <div class="ui-grid-col-7"></div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    รายละเอียด:
+                </div>
+                <div class="ui-grid-col-5">
+                    <textarea pInputTextarea type="text" formControlName="description"></textarea>
+                </div>
+                <div class="ui-grid-col-7"></div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    สถานะ:
+                </div>
+                <div class="ui-grid-col-5">
+                   <p-inputSwitch formControlName="activeFlag" onLabel="ใช้งาน" offLabel="ไม่ใช้งาน"></p-inputSwitch>
+                </div>
+                <div class="ui-grid-col-7"></div>
+            </div>
+        </div>
+
+
+
+        <br>
+    </p-panel>
+
+</form>
+
+
+<p-dataTable [value]="ptDetails" [rows]="5" [(selection)]="selectedPTDetail" dataKey="id" [paginator]="true" [pageLinks]="3"
+    [stacked]="stacked" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadParameterTableDetailLazy($event)">
+
+    <p-header>Parameter Table Detail</p-header>
+    <p-column styleClass="col-button" [style]="{'width': '50px'}">
+        <ng-template pTemplate="header">
+            <button type="button" pButton icon="fa-trash" class="ui-button-danger" (click)="onRemove()"></button></ng-template>
+        <ng-template let-parameterTableDetail="rowData" pTemplate="body">
+            <button type="button" pButton icon="fa-edit" class="ui-button-success" (click)="selectParameterTableDetail(parameterTableDetail)"></button>
+        </ng-template>
+    </p-column>
+    <p-column [style]="{'width':'38px'}" selectionMode="multiple"></p-column>
+    <p-column field="id" header="Id" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="tableCode" header="Table Code" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="code" header="Code" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="description" header="รายละเอียด" [sortable]="true" [filter]="true"></p-column>
+    <p-column field="activeFlag" header="สถานะ" [sortable]="true" [filter]="true">
+        <ng-template let-col let-pthCol="rowData" pTemplate="body">
+           <!--  {{pthCol[col.field]}} | -->
+            <div *ngIf="pthCol[col.field] == true;then content else other_content">ไม่พบข้อมูล</div>
+            <ng-template #content>ใช้งาน</ng-template>
+            <ng-template #other_content>ไม่ใช้งาน</ng-template>
+        </ng-template>
+    </p-column>
+</p-dataTable>
+<br>
+<p-confirmDialog></p-confirmDialog>

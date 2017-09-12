@@ -1,0 +1,57 @@
+import { Component, OnInit, Input, Output, ElementRef, EventEmitter } from '@angular/core';
+import { DropdownOptions } from "app/commons/auto-complete-dropdown/DropdownOptions";
+import { AutoCompleteDropdownService } from "app/commons/auto-complete-dropdown/auto-complete-dropdown.service";
+import { ParameterTableDetail } from "app/masters/parameter-table-detail/ParameterTableDetail";
+import { Employees } from "app/masters/employees/Employees";
+
+@Component({
+  selector: 'app-auto-complete-dropdown',
+  templateUrl: './auto-complete-dropdown.component.html',
+  styleUrls: ['./auto-complete-dropdown.component.scss'],
+  providers: [AutoCompleteDropdownService]
+})
+
+export class AutoCompleteDropdownComponent implements OnInit {
+  @Input() dropdownOptions: DropdownOptions<any>;
+  @Output() callback:EventEmitter<any>;
+
+  constructor(private autoCompleteService : AutoCompleteDropdownService) {
+    this.callback = new EventEmitter();
+  }
+
+  ngOnInit() {
+    this.reloadEmployeeDropdown();
+  }
+
+  reloadEmployeeDropdown(){
+    this.autoCompleteService.loadDataDropdown(this.dropdownOptions).then(result => {
+      this.dropdownOptions.dataList = result;
+    });	
+
+  }
+
+  search(event) {
+    this.dropdownOptions.filteredData = [];
+    for(let i = 0; i < this.dropdownOptions.dataList.length; i++) {
+        let object = this.dropdownOptions.dataList[i];
+        let fieldLabel = eval("object."+this.dropdownOptions.fieldLabel);
+        if(fieldLabel.toLowerCase().indexOf(event.query.toLowerCase()) > 0) {
+          this.dropdownOptions.filteredData.push(object);
+        }
+    }
+  }
+
+  handleDropdownClick() {
+    this.dropdownOptions.filteredData = [];
+      //mimic remote call
+      setTimeout(() => {
+        this.dropdownOptions.filteredData = this.dropdownOptions.dataList;
+      }, 100)
+  }
+
+  onSelectItem(data){
+    console.log("onSelectItem",data);
+    this.callback.emit(data);
+  }
+
+}

@@ -1,0 +1,132 @@
+
+<p-confirmDialog></p-confirmDialog>
+<p-panel header="Employee Management" [toggleable]="true">
+
+  <form [formGroup]="employeeform" (ngSubmit)="onSubmit(employeeform.value)">
+    <button pButton type="submit" [disabled]="!employeeform.valid" class="ui-button-primary" icon="fa-check" label="{{btnLabel}}"></button>
+    <button pButton type="button" icon="fa-refresh" label="Reset" (click)="resetForm()" class="ui-button-warning"></button>
+    <button pButton *ngIf="isModify" type="button" class="ui-button-danger" icon="fa-close" label="Cancle" (click)="cancleUpdate()"></button>
+
+    <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+      <p-growl class="ui-growl" [value]="msgs"></p-growl>
+      <input pInputText type="hidden" formControlName="employeeId" />
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Employee Code:*
+        </div>
+        <div class="ui-grid-col-4">
+          <input pInputText type="text" formControlName="employeeCode" placeholder="Employee Code is required" />
+        </div>
+        <div class="ui-grid-col-6">
+          <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!employeeform.controls['employeeCode'].valid&&employeeform.controls['employeeCode'].dirty">
+            <i class="fa fa-close"></i> Employee Code is required
+          </div>
+        </div>
+      </div>
+
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Employee Firstname:*
+        </div>
+        <div class="ui-grid-col-4">
+          <input pInputText type="text" formControlName="employeeFirstName" placeholder="Employee Firstname is required" />
+        </div>
+        <div class="ui-grid-col-6">
+          <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!employeeform.controls['employeeFirstName'].valid&&employeeform.controls['employeeFirstName'].dirty">
+            <i class="fa fa-close"></i> Employee Firstname is required
+          </div>
+        </div>
+      </div>
+
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Employee Lastname:*
+        </div>
+        <div class="ui-grid-col-4">
+          <input pInputText type="text" formControlName="employeeLastName" placeholder="Employee Lastname is required" />
+        </div>
+        <div class="ui-grid-col-6">
+          <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!employeeform.controls['employeeLastName'].valid&&employeeform.controls['employeeLastName'].dirty">
+            <i class="fa fa-close"></i> Employee Lastname is required
+          </div>
+        </div>
+      </div>
+
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          E-mail Address:*
+        </div>
+        <div class="ui-grid-col-4">
+          <input pInputText type="text" formControlName="emailAddress" placeholder="E-mail Address is required" />
+        </div>
+        <div class="ui-grid-col-6">
+          <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!employeeform.controls['emailAddress'].valid&&employeeform.controls['emailAddress'].dirty">
+            <i class="fa fa-close"></i> E-mail Address is required
+          </div>
+        </div>
+      </div>
+
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Tel. Number:*
+        </div>
+        <div class="ui-grid-col-4">
+          <input pInputText type="text" formControlName="employeeTelNo" placeholder="Tel. Number is required" />
+        </div>
+        <div class="ui-grid-col-6">
+          <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!employeeform.controls['employeeTelNo'].valid&&employeeform.controls['employeeTelNo'].dirty">
+            <i class="fa fa-close"></i> Tel. Number is required
+          </div>
+        </div>
+      </div>
+
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Employee Prefix:*
+        </div>
+        <div class="ui-grid-col-4">
+          <input pInputText type="text" formControlName="employeePrefix" placeholder="Employee Prefix is required" />
+        </div>
+        <div class="ui-grid-col-6">
+          <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!employeeform.controls['employeePrefix'].valid&&employeeform.controls['employeePrefix'].dirty">
+            <i class="fa fa-close"></i> Employee Prefix is required
+          </div>
+        </div>
+      </div>
+
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Active Flag :
+        </div>
+        <div class="ui-grid-col-6">
+          <p-radioButton value="Y" label="ใช้งาน" name="activeFlag" formControlName="activeFlag"></p-radioButton>
+          <p-radioButton value="N" label="ไม่ใช้งาน" name="activeFlag" formControlName="activeFlag"></p-radioButton>
+        </div>
+      </div>
+
+    </div>
+  </form>
+
+  <div class="ui-g">
+    <p-dataTable [style]="{'margin-top':'20px'}" [value]="employeesObj" [rows]="10" [paginator]="true" [pageLinks]="5" [rowsPerPageOptions]="[5,10,20]"
+      [stacked]="stacked" [(selection)]="selectedEmployees">
+      <p-header>List of Employee</p-header>
+      <p-column styleClass="col-button" [style]="{'width':'60px'}" header="Action">
+        <ng-template pTemplate="header">
+          <button type="button" pButton icon="fa-trash" class="ui-button-danger" (click)="onRemove()"></button></ng-template>
+        <ng-template let-employee="rowData" pTemplate="body">
+          <button type="button" pButton (click)="selectEmployee(employee)" icon="fa-edit"></button>
+        </ng-template>
+      </p-column>
+      <p-column [style]="{'width':'38px'}" selectionMode="multiple"></p-column>
+      <p-column field="employeeCode" header="Employee Code" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+      <p-column field="employeeFirstName" header="Employee FirstName" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+      <p-column field="employeeLastName" header="Employee LastName" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+      <p-column field="emailAddress" header="E-mail Address" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+      <p-column field="employeeTelNo" header="Tel. Number" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+      <p-column field="employeePrefix" header="Employee Prefix" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+      <p-column field="activeFlag" header="Active Flag" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+      
+    </p-dataTable>
+  </div>
+</p-panel>

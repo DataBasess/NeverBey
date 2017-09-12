@@ -1,0 +1,52 @@
+<form [formGroup]="exampleform" (ngSubmit)="onSubmit(exampleform.value)">
+
+<h1>Table Common</h1>
+<div class="div-border">
+    <app-table #tableExample (onRowSelectEvent)="onRowSelect($event)"></app-table>
+</div>
+
+<br><h1>Dropdown Common</h1>
+<div class="div-border">
+
+        <div class="ui-grid-row">
+            <div class="ui-grid-col-1">
+                Dropdown:
+            </div>
+            <div class="ui-grid-col-4">
+                <app-auto-complete-dropdown #autoCompleteDropdown (onSelection)="onSelection($event)"></app-auto-complete-dropdown>
+                    <div class="ui-message ui-messages-error ui-corner-all" 
+                        *ngIf="!exampleform.controls['dropdown'].valid&&exampleform.controls['dropdown'].dirty">
+                    <i class="fa fa-close"></i>
+                    Dropdown is required
+                </div>
+
+                <app-auto-complete-dropdown #autoCompleteDropdown2></app-auto-complete-dropdown>
+
+            </div>
+        </div>
+
+</div>
+
+<br><h1>LOV Common</h1>
+<div class="div-border">
+    LOV with out input<br>
+    <button pButton label="Show" (click)="onClickBtnLOV($event)"></button> : {{labelSelect}}
+    <app-lov #lovPTHeader [(display)]="displayModalEmp" (onSelectTableRow)="onSelectTableRowInLOV($event)"></app-lov>
+<br><br>
+LOV with input
+    <div class="ui-inputgroup">
+        <input pInputText type="text" value="{{labelSelect2}}" placeholder="pHeaderCode" readonly/>
+        <button pButton type="button" icon="fa-search"  style="width: 32px;" (click)="onClickBtnLOV2($event)"></button>      
+        <app-lov #lovPTHeader2 [(display)]="displayModalEmp2" (onSelectTableRow)="onSelectTableRowInLOV2($event)"></app-lov>  
+    </div>
+</div>
+
+
+<br>
+<h1>Btn Test</h1>
+<div class="div-border">
+    <button *ngIf = "addStatus" pButton label="Add" ></button>
+    <button *ngIf = "addStatus2" pButton label="Add" ></button>
+</div>
+
+</form>

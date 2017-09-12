@@ -1,0 +1,225 @@
+import { element } from 'protractor';
+import { LazyLoadEvent } from 'primeng/primeng';
+import { EmployeesService } from './../employees/employees.service';
+import { Employees } from './../employees/Employees';
+import { DropdownOptions } from './../../commons/auto-complete-dropdown/DropdownOptions';
+import { UserManagementService } from 'app/masters/user-management/user-management.service';
+import { ConfirmationService } from 'primeng/primeng';
+import { Message } from 'primeng/components/common/api';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AuthoritiesService } from "app/masters/authorities/authorities.service";
+import { Authorities } from "app/masters/authorities/Authorities";
+import { Usermanagement } from "app/masters/user-management/UserManagement";
+@Component({
+  selector: 'app-user-management',
+  templateUrl: './user-management.component.html',
+  styleUrls: ['./user-management.component.scss'],
+  providers: [UserManagementService, ConfirmationService, EmployeesService]
+})
+export class UserManagementComponent implements OnInit {
+
+  @ViewChild("autoCompleteDropdown") autoCompleteDropdown: any;
+  msgs: Message[] = [];
+
+  /* User */
+  userManagementForm: FormGroup;
+  userTable: Usermanagement[];
+  selectUserTable: Usermanagement[];
+  btnLabel = "Save";
+  isModify = false;
+  totalRecordsUserManagement: number;
+  th: any;
+  display: boolean = false;
+  globalEventUsermanageMent: LazyLoadEvent;
+
+
+  /* Employee */
+  employeesObj: Employees[];
+  globalEventEmployee: LazyLoadEvent;
+  totalRecordsEmployee: number;
+
+
+  constructor(private fb: FormBuilder,
+    private usersManagementService: UserManagementService,
+    private confirmationService: ConfirmationService,
+    private employeesService: EmployeesService) { }
+
+
+  ngOnInit() {
+    this.userManagementForm = this.fb.group({
+      'employeeObjectemployeeId.employeeCode': new FormControl('', Validators.required),
+      'effectiveDate': new FormControl('', Validators.required),
+      'employeeFullName': new FormControl('', Validators.required),
+      'username': new FormControl('', Validators.required),
+      'password': new FormControl('', Validators.required),
+      'enabled': new FormControl(false)
+    });
+    this.userManagementForm.addControl('employeeObjectemployeeId',new FormControl('', Validators.required));
+    
+
+    this.th = {
+      firstDayOfWeek: 0,
+      dayNames: ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์"],
+      dayNamesShort: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
+      dayNamesMin: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
+      monthNames: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
+      monthNamesShort: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."]
+    };
+
+    this.autoCompleteDropdown.dropdownOptions = new DropdownOptions<Usermanagement>(
+      "/api/authorities/load"
+      , {}
+      , "authority"
+      , "คำค้นหา"
+      , this.userManagementForm
+      , "authorities"
+      , new FormControl('', Validators.required)
+    )
+  }
+
+  onSubmit(value: Usermanagement) {
+    console.log(value);
+
+    //======================================================================TEST
+      let empObject =  this.userManagementForm.controls['employeeObjectemployeeId'].value;
+      let empSave:Employees = new Employees();
+      empSave.employeeId = empObject.employeeId;
+      this.userManagementForm.controls['employeeObjectemployeeId'].setValue(empSave);
+      console.log("==============>",empSave);
+      
+    //======================================================================TEST
+    
+    this.msgs = [];
+    this.usersManagementService.saveOrUpdate(this.userManagementForm.value, this.isModify)
+      .then(
+      res => {
+        console.log(res);
+        this.formReset();
+        this.msgs.push(res);
+        this.cancleUpdate();
+        this.loadUserManagementTableLazy(this.globalEventUsermanageMent);
+        this.loadLazyEmployeeForLOV(this.globalEventEmployee);
+      },
+      errors => {
+        let error = errors.json();
+        console.log(error);
+        this.msgs.push(error);
+      });
+
+  }
+
+  loadUserManagementTableLazy(event: LazyLoadEvent) {
+    this.globalEventUsermanageMent = event;
+    this.usersManagementService.loadUserManagementTableLazy(event)
+      .then(result => {
+        this.userTable = result.listOfData;
+        this.totalRecordsUserManagement = result.totalRecords;
+      });
+  }
+
+  cancleUpdate() {
+    this.formReset();
+    this.btnLabel = "Save";
+    this.isModify = false;
+  }
+
+  formReset() {
+    (<FormGroup>this.userManagementForm).reset({});;
+  }
+
+  onRemove() {
+    console.log(this.selectUserTable);
+
+    this.selectUserTable.forEach(function (value) {
+      console.log(value);
+    });
+
+    this.confirmationService.confirm({
+      message: 'Are you sure that you want to proceed?',
+      header: 'Confirmation',
+      icon: 'fa fa-question-circle',
+      accept: () => {
+        //======================================================================TEST
+        for(let user of this.selectUserTable){
+          let empSave:Employees = new Employees();
+          empSave.employeeId = user.employeeObjectemployeeId.employeeId;
+          user.employeeObjectemployeeId = empSave;
+        }
+        //======================================================================TEST
+        
+        this.usersManagementService.removeUserManagementTable(this.selectUserTable)
+          .then(
+          result => {
+            //console.log(result);
+            this.formReset();
+            this.selectUserTable = [];
+            this.msgs.push(result);
+          },
+          errors => {
+            let error = errors.json();
+            console.log(error);
+            this.msgs.push(error);
+          }
+          );
+      },
+      reject: () => {
+        //console.log("Reject");
+      }
+    });
+
+  }
+
+  showDialog() {
+    this.display = true;
+  }
+
+  loadLazyEmployeeForLOV(event: LazyLoadEvent) {
+    this.globalEventEmployee = event;
+    this.employeesService.loadLazyEmployeeForLOV(event).then(result => {
+      console.log(result);
+      console.log(result.listOfData);
+      this.employeesObj = result.listOfData;
+      this.totalRecordsEmployee = result.totalRecords;
+    });
+
+  } // use lazy
+
+  onRowSelectEmployee(event) {
+    console.log(event.data);
+
+    event.data.employeeStartDate = new Date(event.data.employeeStartDate);
+    event.data.employeeResignDate = new Date(event.data.employeeResignDate);
+
+    this.userManagementForm.controls['employeeObjectemployeeId'].setValue(event.data);
+    this.userManagementForm.controls['employeeObjectemployeeId.employeeCode'].setValue(event.data.employeeCode);
+    this.userManagementForm.controls['employeeFullName'].setValue(event.data.employeeFullName);
+
+    this.btnLabel = "Save";
+    this.isModify = false;
+    this.display = false;
+
+  
+  }
+
+  selectUserManagementTable(value: Usermanagement){
+    console.log(value);
+    let valuDate = value.effectiveDate;
+    valuDate = new Date(valuDate);
+
+    this.userManagementForm.controls['employeeObjectemployeeId'].setValue(value.employeeObjectemployeeId);
+    this.userManagementForm.controls['employeeObjectemployeeId.employeeCode'].setValue(value.employeeObjectemployeeId.employeeCode);
+    this.userManagementForm.controls['employeeFullName'].setValue(value.employeeObjectemployeeId.employeeFullName);
+    this.userManagementForm.controls['username'].setValue(value.username);
+    this.userManagementForm.controls['password'].setValue(value.password);
+    this.userManagementForm.controls['effectiveDate'].setValue(valuDate);
+    this.userManagementForm.controls['enabled'].setValue(value.enabled);
+    this.userManagementForm.controls['authorities'].setValue(value.authorities);
+
+    this.btnLabel = "Update";
+    this.isModify = true;
+
+    
+  }
+
+}

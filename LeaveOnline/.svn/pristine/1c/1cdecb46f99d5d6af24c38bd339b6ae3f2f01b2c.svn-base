@@ -1,0 +1,64 @@
+package com.epro.leave.controller.administrator;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.epro.infrastructure.security.entity.Authority;
+import com.epro.infrastructure.security.entity.Menu;
+import com.epro.leave.common.CommonResponse;
+import com.epro.leave.common.MessageResponse;
+import com.epro.leave.service.MenuService;
+
+@RestController
+@RequestMapping("/api/Menu")
+public class MenuController {
+	
+	@Autowired
+	MenuService menuService;
+	
+	@PostMapping("/save")
+	public ResponseEntity<MessageResponse> save(@RequestBody Menu menu) {
+		try {
+			
+			Authority authority = menuService.get(Authority.class,1);
+			
+			Set<Authority> setAut = new HashSet<Authority>();
+			setAut.add(authority);
+			menu.setAuthorities(setAut);
+			
+			menuService.save(menu);
+			return CommonResponse.getSuccessMessageResponse();
+		} catch (Exception e) {
+			// TODO: handle exception
+			return CommonResponse.getErrorMessageResponse(e);
+		}
+	}
+	
+	
+	@RequestMapping(value="/Test")
+	public void  saveMenu() {
+		Authority authority = menuService.get(Authority.class,1);
+		
+		Set<Authority> setAut = new HashSet<Authority>();
+		setAut.add(authority);
+		
+		Menu menu = new Menu();
+		menu.setName("TestMenu");
+		menu.setActiveFlag("Y");
+		menu.setOrder(1);
+		menu.setAuthorities(setAut);
+		
+		
+		menuService.save(menu);
+				
+	}
+	
+
+}

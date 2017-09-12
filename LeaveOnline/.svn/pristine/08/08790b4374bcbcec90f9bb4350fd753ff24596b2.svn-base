@@ -1,0 +1,203 @@
+<p-growl [(value)]="msgs" styleClass="registerGrowl" life="3000"></p-growl>
+<p-panel header="จัดการบัญชีผู้ใช้งาน" [toggleable]="true">
+    <form [formGroup]="userManagementForm" (ngSubmit)="onSubmit(userManagementForm.value)">
+  
+      <button pButton type="submit" icon="fa-check" label="{{btnLabel}}" class="ui-button-primary" [disabled]="!userManagementForm.valid"></button>
+      <button pButton type="button" icon="fa-refresh" label="Reset" class="ui-button-warning" (click)="formReset()"></button>
+      <button pButton *ngIf="isModify" type="button" class="ui-button-danger" icon="fa-close" label="Cancle" (click)="cancleUpdate()"></button>
+  
+      <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+  
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-2">
+            รหัสพนักงาน *:
+          </div>
+          <div class="ui-grid-col-2">
+              <div class="ui-inputgroup">
+              <input pInputText type="text" formControlName="employeeObjectemployeeId.employeeCode" placeholder="EmployeeCode" />         
+             <button pButton type="button" icon="fa-search"  style="width: 32px;" (click)="showDialog()"></button>        
+            </div>
+            </div>
+          <div class="ui-grid-col-2">
+            <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!userManagementForm.controls['employeeObjectemployeeId.employeeCode'].valid&&userManagementForm.controls['employeeObjectemployeeId.employeeCode'].dirty">
+              <i class="fa fa-close"></i> Employee is required
+            </div>
+          </div>
+
+          <div class="ui-grid-col-2">
+            วันที่เริ่มทำงาน *:
+          </div>
+          <div class="ui-grid-col-2">
+            <p-calendar formControlName="effectiveDate" 
+            [showIcon]="true" 
+            styleClass="calendarClass" 
+            [locale]="th"
+            dateFormat="dd/mm/yy"></p-calendar>
+          </div>
+          <div class="ui-grid-col-2">
+            <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!userManagementForm.controls['effectiveDate'].valid&&userManagementForm.controls['effectiveDate'].dirty">
+              <i class="fa fa-close"></i> Date is required
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-grid-row">
+            <div class="ui-grid-col-2">
+              ชื่อ - นามสกุล *:
+            </div>
+            <div class="ui-grid-col-2">
+              <input pInputText type="text" formControlName="employeeFullName" placeholder="EmployeeName" />
+            </div>
+            <div class="ui-grid-col-2">
+              <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!userManagementForm.controls['employeeFullName'].valid&&userManagementForm.controls['employeeFullName'].dirty">
+                <i class="fa fa-close"></i> Employeename is required
+              </div>
+            </div>
+  
+            <div class="ui-grid-col-2">
+              กลุ่มผู้ใช้งาน *:
+            </div>
+            <div class="ui-grid-col-2">
+              <app-auto-complete-dropdown #autoCompleteDropdown></app-auto-complete-dropdown>
+              <!-- <p-dropdown [options]="" formControlName="authority"></p-dropdown> -->
+            </div>
+            <div class="ui-grid-col-2">
+              <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!userManagementForm.controls['authorities'].valid&&userManagementForm.controls['authorities'].dirty">
+                <i class="fa fa-close"></i> Authority is required
+              </div>
+            </div>
+          </div>
+
+          <div class="ui-grid-row">
+            <div class="ui-grid-col-2">
+              ชื่อผู้ใช้งาน *:
+            </div>
+            <div class="ui-grid-col-2">
+              <input pInputText type="text" formControlName="username" placeholder="Username" />
+            </div>
+            <div class="ui-grid-col-2">
+              <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!userManagementForm.controls['username'].valid&&userManagementForm.controls['username'].dirty">
+                <i class="fa fa-close"></i> Username is required
+              </div>
+            </div>
+  
+            <div class="ui-grid-col-2">
+                สถานะ *:
+            </div>
+            <div class="ui-grid-col-2">
+                <p-inputSwitch onLabel="ใช้งาน" offLabel="ไม่ใช้งาน" formControlName="enabled"></p-inputSwitch>    
+            </div>
+            <div class="ui-grid-col-2">
+              <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!userManagementForm.controls['enabled'].valid&&userManagementForm.controls['enabled'].dirty">
+                <i class="fa fa-close"></i> Status is required
+              </div>
+            </div>
+          </div>
+
+          <div class="ui-grid-row">
+            <div class="ui-grid-col-2">
+              รหัสผ่าน *:
+            </div>
+            <div class="ui-grid-col-2">
+              <input pPassword type="password" formControlName="password" placeholder="Password"/>
+<!--               <input pInputText type="hidden" formControlName="employeeObjectemployeeId"/>
+ -->              
+            </div>
+            <div class="ui-grid-col-2">
+              <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!userManagementForm.controls['password'].valid&&userManagementForm.controls['password'].dirty">
+                <i class="fa fa-close"></i> Password is required
+              </div>
+            </div>
+  
+            <div class="ui-grid-col-2">
+            </div>
+            <div class="ui-grid-col-2">
+            </div>
+            <div class="ui-grid-col-2">
+            </div>
+          </div>
+      </div>
+      </form>
+  </p-panel>
+
+  <br>
+  <p-dataTable 
+  [value]="userTable" 
+  dataKey="id" 
+  [(selection)]="selectUserTable" 
+  [rows]="10" 
+  [paginator]="true"
+  [pageLinks]="5" 
+  [rowsPerPageOptions]="[5,10,20]" 
+  [lazy]="true" 
+  [totalRecords]="totalRecordsUserManagement" 
+  (onLazyLoad)="loadUserManagementTableLazy($event)"
+  [globalFilter]="gb" #dt>
+
+  <p-column [style]="{'width':'38px'}" selectionMode="multiple"></p-column>
+  <p-column styleClass="col-button" [style]="{'width': '50px'}">
+    <ng-template pTemplate="header">
+      <button type="button" pButton icon="fa-trash" class="ui-button-danger" (click)="onRemove()"></button>
+    </ng-template>
+    <ng-template let-userManagementRow="rowData" pTemplate="body">
+      <button type="button" pButton (click)="selectUserManagementTable(userManagementRow)" icon="fa-edit"></button>
+    </ng-template>
+  </p-column>
+
+  <p-column field="id" hidden="true" header="id"></p-column>
+  <p-column field="employeeObjectemployeeId.employeeCode" header="รหัสพนักงาน" [sortable]="true" [filter]="true" filterPlaceholder="รหัสพนักงาน"></p-column>
+  <p-column field="employeeObjectemployeeId.employeeFullName" header="ชื่อ - นามสกุล" [sortable]="true" [filter]="true" filterPlaceholder="ชื่อ"></p-column>
+  <p-column field="username" header="ชื่อผู้ใช้งาน" [sortable]="true" [filter]="true" filterPlaceholder="ชื่อผู้ใช้งาน"></p-column>
+  <p-column field="authorities.authority" header="กลุ่มผู้ใช้งาน" [sortable]="true" [filter]="true" filterPlaceholder="กลุ่มผู้ใช้งาน"></p-column>
+  <p-column field="effectiveDate" header="วันที่เริ่มใช้งาน" [sortable]="true" [filter]="true" filterPlaceholder="วันที่เริ่มใช้งาน"></p-column>
+  <p-column field="enable" header="สถานะ" [sortable]="true" [filter]="true" filterPlaceholder="สถานะ">
+    <ng-template let-col let-pthCol="rowData" pTemplate="body">
+      <div *ngIf="pthCol[col.field] == true ;then content else other_content">ไม่พบข้อมูล</div>
+      <ng-template #content>ใช้งาน</ng-template>
+      <ng-template #other_content>ไม่ใช้งาน</ng-template>
+    </ng-template>
+  </p-column>
+
+</p-dataTable>
+<p-confirmDialog></p-confirmDialog>
+
+<p-dialog header="Title" 
+[(visible)]="display" 
+[width]="1080" 
+[height]="600" 
+ modal="true">
+
+  <p-dataTable 
+  [style]="{'margin-top':'20px'}" 
+  [value]="employeesObj" 
+  [rows]="10" 
+  [paginator]="true" 
+  [pageLinks]="5" 
+  [rowsPerPageOptions]="[5,10,20]"
+  [stacked]="stacked" 
+  [(selection)]="selectedEmployees" 
+  [lazy]="true" 
+  [totalRecords]="totalRecordsEmployee" 
+  (onLazyLoad)="loadLazyEmployeeForLOV($event)"
+  (onRowSelect)="onRowSelectEmployee($event)"
+  selectionMode="single"
+  >
+ 
+  <p-header>List of Employee</p-header>
+  <p-column [style]="{'width':'38px'}" selectionMode="multiple"></p-column>
+  <p-column styleClass="col-button" [style]="{'width':'60px'}" header="Action">
+   <ng-template pTemplate="header">
+     <button type="button" pButton icon="fa-trash" class="ui-button-danger" (click)="onRemove()"></button></ng-template>
+   <ng-template let-employee="rowData" pTemplate="body">
+     <button type="button" pButton (click)="selectEmployee(employee)" icon="fa-edit"></button>
+   </ng-template>
+ </p-column>
+ <p-column field="employeePrefix.description" header="Employee Prefix" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column> 
+ <p-column field="employeeFullName" header="Employee FullName" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+ <p-column field="employeeCode" header="Employee Code" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+ <p-column field="employeePosition.description" header="Employee Position" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+ <p-column field="employeeDepartment.description" header="Employee Department" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+ 
+</p-dataTable>
+</p-dialog>
+

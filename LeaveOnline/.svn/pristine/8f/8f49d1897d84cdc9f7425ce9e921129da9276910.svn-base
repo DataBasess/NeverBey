@@ -1,0 +1,76 @@
+import { Component, OnInit, Input, Output, ElementRef, EventEmitter } from '@angular/core';
+import { DropdownOptions } from "app/commons/auto-complete-dropdown/DropdownOptions";
+import { AutoCompleteDropdownService } from "app/commons/auto-complete-dropdown/auto-complete-dropdown.service";
+import { ParameterTableDetail } from "app/masters/parameter-table-detail/ParameterTableDetail";
+import { Employees } from "app/masters/employees/Employees";
+import { FormControl, Validators } from "@angular/forms";
+
+@Component({
+  selector: 'app-auto-complete-dropdown',
+  templateUrl: './auto-complete-dropdown.component.html',
+  styleUrls: ['./auto-complete-dropdown.component.scss'],
+  providers: [AutoCompleteDropdownService]
+})
+
+export class AutoCompleteDropdownComponent implements OnInit {
+  @Input() dropdownOptions: DropdownOptions<any>;
+
+  @Input() value:any;
+  @Output() getValueChange = new EventEmitter<any>();
+  @Output() onSelection = new EventEmitter<any>();
+
+  constructor(private autoCompleteService : AutoCompleteDropdownService) {}
+
+  ngOnInit() {
+    this.reloadEmployeeDropdown();
+    let formControl:FormControl = this.dropdownOptions.formControl == null?
+                                  new FormControl('', Validators.required)//if
+                                  :this.dropdownOptions.formControl;//else
+
+    this.dropdownOptions.formGroup.addControl(this.dropdownOptions.fieldFormGroup,formControl);
+  }
+
+  reloadEmployeeDropdown(){
+    this.autoCompleteService.loadDataDropdown(this.dropdownOptions).then(result => {
+      this.dropdownOptions.dataList = result;
+    });	
+
+  }
+
+  search(event) {
+    this.dropdownOptions.filteredData = [];
+    this.dropdownOptions.formGroup.controls[this.dropdownOptions.fieldFormGroup].setValue(null);
+    (this.dropdownOptions.formGroup.controls[this.dropdownOptions.fieldFormGroup] as FormControl).markAsDirty();
+
+    for(let i = 0; i < this.dropdownOptions.dataList.length; i++) {
+        let object = this.dropdownOptions.dataList[i];
+        let fieldValue = eval("object."+this.dropdownOptions.fieldValue);
+
+        if(fieldValue.toLowerCase().indexOf(event.query.toLowerCase()) >= 0) {
+          this.dropdownOptions.filteredData.push(object);
+        }
+
+        if(fieldValue.toLowerCase() == event.query.toLowerCase()){
+          this.dropdownOptions.formGroup.controls[this.dropdownOptions.fieldFormGroup].setValue(object);
+        }
+    }
+  }
+
+  handleDropdownClick() {
+    this.dropdownOptions.filteredData = [];
+      //mimic remote call
+      setTimeout(() => {
+        this.dropdownOptions.filteredData = this.dropdownOptions.dataList;
+      }, 100)
+  }
+
+  onSelectItem(data){
+    this.value = "Child";
+    this.getValueChange.emit(this.value);
+    this.onSelection.emit(data)
+
+    this.dropdownOptions.formGroup.controls[this.dropdownOptions.fieldFormGroup].setValue(data);
+    
+  }
+
+}

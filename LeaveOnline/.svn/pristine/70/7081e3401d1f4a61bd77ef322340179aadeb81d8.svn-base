@@ -1,0 +1,39 @@
+
+import { CodeHighlighterModule } from 'primeng/components/codehighlighter/codehighlighter';
+import { InputTextareaModule } from 'primeng/components/inputtextarea/inputtextarea';
+import { InputTextModule } from 'primeng/components/inputtext/inputtext';
+import { GrowlModule } from 'primeng/components/growl/growl';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/components/button/button';
+import { PanelModule, ConfirmDialogModule } from 'primeng/primeng';
+import { EmployeesComponent } from './employees.component';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { EmployeesRoutingModule } from './employees-routing.module';
+import { SplitButtonModule } from 'primeng/primeng';
+import { DataTableModule, SharedModule,RadioButtonModule } from 'primeng/primeng';
+
+
+@NgModule({
+  imports: [
+    CommonModule,
+    EmployeesRoutingModule,
+    PanelModule,
+    ButtonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    GrowlModule,
+    InputTextModule,
+    InputTextareaModule,
+    CodeHighlighterModule,
+    SplitButtonModule,
+    DataTableModule,
+    SharedModule,
+    ConfirmDialogModule,
+    RadioButtonModule
+
+  ],
+  declarations: [EmployeesComponent]
+})
+export class EmployeesModule { }

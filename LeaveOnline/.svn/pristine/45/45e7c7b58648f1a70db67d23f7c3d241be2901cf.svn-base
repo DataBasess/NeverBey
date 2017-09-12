@@ -1,0 +1,21 @@
+
+import { EventEmitter } from "@angular/core";
+
+export class DropdownOptions<T> {
+  fieldValue:string;
+  fieldLabel:string;
+  path:string;
+  placeholder:string;
+  dataList:any[];
+  postData:{};
+  filteredData:T[];
+  callback: EventEmitter<T>
+
+  constructor(path:string,postData:{},fieldValue:string,fieldLabel:string,placeholder:string) {
+    this.path = path;
+    this.postData = postData;
+    this.fieldValue = fieldValue;
+    this.fieldLabel = fieldLabel;
+    this.placeholder = placeholder;
+  }
+}

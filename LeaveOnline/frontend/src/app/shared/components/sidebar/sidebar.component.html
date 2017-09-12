@@ -1,0 +1,33 @@
+
+<nav class="sidebar" [ngClass]="{sidebarPushRight: isActive}" >
+    <ul class="list-group">
+        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: files }"></ng-container>   
+        <ng-template #recursiveList let-files  >
+
+            <div *ngFor="let tree of  files">
+
+                <div class="nested-menu" *ngIf="tree.data.activeFlag">
+                    <a class="list-group-item" (click)="addExpandClass(tree.data.id)" routerLink="/{{tree.data.link}}">
+                         <span><i class="{{tree.data.menuIcon}}"></i>&nbsp; {{tree.data.name }}</span>
+                    </a>
+                         <li class="nested" *ngIf="isPageExpands.indexOf(tree.data.id)==-1" [class.expand]="true">
+                            <ul class="submenu">
+                                <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: tree.children }"></ng-container>
+                            </ul> 
+                        </li>
+                </div>                    
+                            
+            </div>
+
+        </ng-template>            
+    </ul>
+</nav>
+
+
+
+        
+
+         
+
+
+

@@ -11,6 +11,8 @@ public class TreeMenu {
 	public    String expandedIcon="fa-folder-open";
 	public    String collapsedIcon="fa-folder";
 	public	  Boolean selectable;
+	public	  Boolean metaKeySelection;
+	public	  Boolean checked;
 	public  ArrayList<TreeMenu> children =new ArrayList<TreeMenu>();
 	
 	
@@ -18,6 +20,18 @@ public class TreeMenu {
 	
 	
 	
+	public Boolean getChecked() {
+		return checked;
+	}
+	public void setChecked(Boolean checked) {
+		this.checked = checked;
+	}
+	public Boolean getMetaKeySelection() {
+		return metaKeySelection;
+	}
+	public void setMetaKeySelection(Boolean metaKeySelection) {
+		this.metaKeySelection = metaKeySelection;
+	}
 	public Boolean getSelectable() {
 		return selectable;
 	}

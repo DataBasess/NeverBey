@@ -13,7 +13,8 @@
   <p-tree [value]="files" 
           selectionMode="checkbox" 
           (onNodeSelect)="nodeSelect($event)" 
-          (onNodeUnselect)="nodeUnselect($event)" ></p-tree>
+          (onNodeUnselect)="nodeUnselect($event)"
+          [(selection)]="SelectedMenuList" ></p-tree>
 </p-panel>
 <p-growl [(value)]="msgs" styleClass="registerGrowl" life="5000"></p-growl>
 

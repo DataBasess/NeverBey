@@ -25,6 +25,7 @@ export class MenuAuthorityComponent implements OnInit {
     private menuAuthoritiesService : MenuAuthoritiesService) { }
 
     files: TreeNode[];
+    SelectedMenuList: TreeNode[];
     MenuAuthoritiesform: FormGroup;
     msgs:Message[] = [];
 
@@ -67,12 +68,14 @@ export class MenuAuthorityComponent implements OnInit {
 
   }
 
-  SelectDropdown(){
+  SelectDropdown(event){
     
     this.authoritiesModel = this.MenuAuthoritiesform.controls['authorities'].value;
     console.log( this.authoritiesModel);
+    console.log(event);
+    
     this.menuAuthoritiesService.loadTreeAuthorities(this.authoritiesModel)
-    .then(files =>this.files= files);
+    .then(SelectedMenuList =>this.SelectedMenuList= SelectedMenuList); 
   }
 
   nodeSelect(event) {
@@ -81,7 +84,7 @@ export class MenuAuthorityComponent implements OnInit {
     console.log(this.MenuAuthoritiesform.value);
     this.menuAuthoritiesService.save(this.MenuAuthoritiesform.value).then(result =>{
       console.log(result);
-     // this.msgs.push(result);
+     this.msgs.push(result);
     }),
     errors => {
       let error = errors.json();

@@ -231,7 +231,9 @@ public class MenuController {
 			TreeMenu treeNode = new TreeMenu();
 			treeNode.setData(menu);
 			treeNode.setLabel(menu.getName());
-			treeNode.setSelectable(isExistsMenuAuthority(menu, authority));
+			//treeNode.setSelectable(isExistsMenuAuthority(menu, authority));
+			treeNode.setMetaKeySelection(isExistsMenuAuthority(menu, authority));
+			treeNode.setChecked(isExistsMenuAuthority(menu, authority));
 			List<Menu> childrens = menusAll.stream().filter(children -> BeanUtils.isNotNull(children.getParent())
 					&& children.getParent().getId().equals(menu.getId())).collect(Collectors.toList());
 			
